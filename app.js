@@ -63,6 +63,12 @@ function renderEditor() {
   if (editorWrap.classList.contains('previewing')) renderPreview();
 }
 function selectNote(id) { if (!state.notes.some(n => n.id === id)) return; flushSave(); state.activeId = id; persist(); renderList(); renderEditor(); els.content.focus(); }
+function moveNote(direction) {
+  const ordered = [...state.notes].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt);
+  const current = ordered.findIndex(note => note.id === state.activeId);
+  const next = ordered[(current + direction + ordered.length) % ordered.length];
+  if (next) selectNote(next.id);
+}
 function countWords(text) { return (text.trim().match(/\S+/g) || []).length; }
 function updateCounts() { els.words.textContent = `${countWords(els.content.value)} words`; }
 function escapeHtml(value) { return value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char])); }
@@ -131,7 +137,10 @@ document.addEventListener('keydown', event => {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'n') { event.preventDefault(); createNote(); }
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'f') { event.preventDefault(); els.search.focus(); }
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') { event.preventDefault(); flushSave(); showToast('Saved locally'); }
+  if ((event.metaKey || event.ctrlKey) && event.key === 'ArrowDown') { event.preventDefault(); moveNote(1); }
+  if ((event.metaKey || event.ctrlKey) && event.key === 'ArrowUp') { event.preventDefault(); moveNote(-1); }
   if (event.key === 'Escape' && document.activeElement === els.search) { els.search.value = ''; renderList(); els.content.focus(); }
+  if (event.key === 'Escape' && editorWrap.classList.contains('previewing')) { document.querySelector('#previewToggle').click(); }
 });
 window.addEventListener('beforeunload', flushSave);
 
