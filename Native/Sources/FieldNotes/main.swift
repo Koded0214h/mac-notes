@@ -13,6 +13,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = NSImage(systemSymbolName: "note.text", accessibilityDescription: "Field Notes")
+        statusItem.button?.title = "✎"
+        statusItem.button?.font = NSFont.systemFont(ofSize: 13)
         statusItem.button?.target = self
         statusItem.button?.action = #selector(togglePopover(_:))
 
@@ -24,14 +26,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover.behavior = .transient
         popover.animates = true
         shortcutManager.start { [weak self] in self?.togglePopover(nil) }
+        DispatchQueue.main.async { [weak self] in self?.showPopover() }
     }
 
     @objc private func togglePopover(_ sender: Any?) {
         guard let button = statusItem.button else { return }
-        if popover.isShown { hidePopover() } else {
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            popover.contentViewController?.view.window?.makeKey()
-        }
+        if popover.isShown { hidePopover() } else { showPopover(relativeTo: button) }
+    }
+
+    private func showPopover(relativeTo button: NSStatusBarButton? = nil) {
+        guard let button = button ?? statusItem.button else { return }
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        popover.contentViewController?.view.window?.makeKey()
     }
 
     private func hidePopover() { popover.performClose(nil) }
