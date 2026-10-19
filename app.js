@@ -117,12 +117,25 @@ function applyTheme(theme) {
   button.setAttribute('aria-label', isDark ? 'Use light mode' : 'Use dark mode');
   button.setAttribute('title', isDark ? 'Use light mode' : 'Use dark mode');
   localStorage.setItem('field-notes-theme', theme);
+  document.querySelector('#lightChoice')?.classList.toggle('active', !isDark);
+  document.querySelector('#darkChoice')?.classList.toggle('active', isDark);
 }
 
 document.querySelector('#newNoteButton').addEventListener('click', createNote);
 document.querySelector('#searchInput').addEventListener('input', renderList);
 document.querySelector('#pinButton').addEventListener('click', () => { const note = activeNote(); note.pinned = !note.pinned; note.updatedAt = Date.now(); persist(); renderList(); renderEditor(); showToast(note.pinned ? 'Pinned to the top' : 'Removed from pinned'); });
 document.querySelector('#themeToggle').addEventListener('click', () => { const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark'; applyTheme(nextTheme); showToast(`${nextTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`); });
+const settingsBackdrop = document.querySelector('#settingsBackdrop');
+document.querySelector('.settings-button').addEventListener('click', () => { settingsBackdrop.hidden = false; document.querySelector('#settingsClose').focus(); });
+document.querySelector('#settingsClose').addEventListener('click', () => { settingsBackdrop.hidden = true; });
+settingsBackdrop.addEventListener('click', event => { if (event.target === settingsBackdrop) settingsBackdrop.hidden = true; });
+document.querySelector('#lightChoice').addEventListener('click', () => applyTheme('light'));
+document.querySelector('#darkChoice').addEventListener('click', () => applyTheme('dark'));
+document.querySelector('#focusOnOpen').checked = localStorage.getItem('field-notes-focus') !== 'false';
+document.querySelector('#launchAtLogin').checked = localStorage.getItem('field-notes-launch') === 'true';
+document.querySelector('#focusOnOpen').addEventListener('change', event => localStorage.setItem('field-notes-focus', event.target.checked));
+document.querySelector('#launchAtLogin').addEventListener('change', event => { localStorage.setItem('field-notes-launch', event.target.checked); showToast('Launch preference saved'); });
+document.querySelector('#settingsExport').addEventListener('click', () => { settingsBackdrop.hidden = true; document.querySelector('#exportButton').click(); });
 document.querySelector('#moreButton').addEventListener('click', deleteNote);
 document.querySelector('#revealButton').addEventListener('click', () => showToast('Notes are stored in your local Field Notes folder'));
 document.querySelector('#exportButton').addEventListener('click', () => {
@@ -155,3 +168,4 @@ document.addEventListener('keydown', event => {
 window.addEventListener('beforeunload', flushSave);
 
 applyTheme(initialTheme); renderList(); renderEditor();
+if (localStorage.getItem('field-notes-focus') !== 'false') els.content.focus();
