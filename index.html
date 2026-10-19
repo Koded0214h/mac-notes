@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#20252a" />
+    <title>Field Notes — menu bar notes</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="desktop">
+      <header class="system-bar">
+        <div class="system-left">
+          <span class="apple-mark">●</span>
+          <span class="system-menu active">Field Notes</span>
+          <span class="system-menu">File</span>
+          <span class="system-menu">Edit</span>
+          <span class="system-menu">View</span>
+          <span class="system-menu">Window</span>
+        </div>
+        <div class="system-right">
+          <span class="status-glyph">⌁</span>
+          <span class="status-glyph">◔</span>
+          <span class="status-glyph">▮</span>
+          <span class="date">Mon 19 Oct&nbsp;&nbsp; 7:42 PM</span>
+          <button class="menu-dot" aria-label="Field Notes menu"><span></span><span></span><span></span></button>
+        </div>
+      </header>
+
+      <main class="workbench">
+        <section class="app-window" aria-label="Field Notes">
+          <aside class="sidebar">
+            <div class="brand-row">
+              <div class="brand-mark"><span></span><span></span><span></span></div>
+              <div>
+                <div class="brand-name">Field Notes</div>
+                <div class="brand-caption">quietly yours</div>
+              </div>
+              <button class="icon-button settings-button" aria-label="Settings" title="Settings">⚙</button>
+            </div>
+
+            <button class="new-note" id="newNoteButton"><span class="plus">+</span><span>New note</span><kbd>⌘ N</kbd></button>
+
+            <label class="search-box" for="searchInput">
+              <span class="search-icon">⌕</span>
+              <input id="searchInput" type="search" placeholder="Search notes" autocomplete="off" />
+              <kbd>⌘ F</kbd>
+            </label>
+
+            <div class="list-heading"><span>Your notes</span><span id="noteCount">3</span></div>
+            <div class="notes-list" id="notesList" role="listbox" aria-label="Notes"></div>
+
+            <div class="sidebar-footer">
+              <div class="local-status"><span class="status-dot"></span><span>Stored on this Mac</span></div>
+              <button class="footer-action" id="revealButton"><span>⌂</span> Open notes folder</button>
+              <div class="shortcut-hint"><span>⌘ ⇧ Space</span><span>Open Field Notes</span></div>
+            </div>
+          </aside>
+
+          <section class="editor-pane">
+            <div class="editor-header">
+              <div class="crumb"><span class="crumb-dot"></span><span id="editedLabel">Edited just now</span></div>
+              <div class="editor-actions">
+                <button class="icon-button" id="pinButton" aria-label="Pin note" title="Pin note">☆</button>
+                <button class="icon-button theme-toggle" id="themeToggle" aria-label="Use dark mode" title="Use dark mode">☾</button>
+                <button class="icon-button" id="moreButton" aria-label="More options" title="More options">•••</button>
+              </div>
+            </div>
+
+            <div class="title-row">
+              <input id="noteTitle" class="note-title" aria-label="Note title" value="The shape of a good day" />
+              <button class="title-edit" id="titleEdit" aria-label="Rename note" title="Rename note">✎</button>
+            </div>
+
+            <div class="format-bar" aria-label="Formatting tools">
+              <button data-format="bold" title="Bold"><strong>B</strong></button>
+              <button data-format="italic" title="Italic"><em>I</em></button>
+              <span class="format-divider"></span>
+              <button data-format="heading" title="Heading">H</button>
+              <button data-format="bullet" title="Bullet list">•</button>
+              <button data-format="check" title="Task list">☑</button>
+              <button data-format="code" title="Code">&lt;/&gt;</button>
+              <button data-format="quote" title="Quote">“</button>
+              <span class="format-spacer"></span>
+              <span class="markdown-label">MARKDOWN</span>
+            </div>
+
+            <div class="editor-wrap">
+              <textarea id="noteContent" spellcheck="true" aria-label="Note content"></textarea>
+              <div class="editor-fade"></div>
+            </div>
+
+            <div class="editor-footer">
+              <span id="wordCount">0 words</span>
+              <span class="save-state"><span class="save-dot"></span><span id="saveState">Saved locally</span></span>
+              <span>Markdown</span>
+            </div>
+          </section>
+        </section>
+        <div class="popover-stem"></div>
+      </main>
+
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
