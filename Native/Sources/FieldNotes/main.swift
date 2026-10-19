@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private let store = NoteStore()
+    private let shortcutManager = ShortcutManager()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -21,6 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover.contentSize = NSSize(width: 720, height: 560)
         popover.behavior = .transient
         popover.animates = true
+        shortcutManager.start { [weak self] in self?.togglePopover(nil) }
     }
 
     @objc private func togglePopover(_ sender: Any?) {

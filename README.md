@@ -18,7 +18,7 @@ Open `index.html` directly in a browser. The prototype has no build step and sto
 - Import existing `.md` or `.markdown` files into the notebook.
 - Responsive layout for smaller windows and light/dark-friendly system surfaces.
 
-The next native implementation step would be to move the note model and autosave coordinator into Swift/AppKit while preserving this interaction model.
+The browser prototype remains useful for fast interaction testing; the native implementation lives in `Native/`.
 
 ## Native macOS slice
 
