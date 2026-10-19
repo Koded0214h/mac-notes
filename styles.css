@@ -78,3 +78,20 @@ body.dark-mode .footer-action { color: #b0bcbc; }
 body.dark-mode .note-title { color: #e5eceb; }
 body.dark-mode .editor-wrap textarea { color: #c8d2d1; }
 body.dark-mode .format-bar button:hover { background: #2b3838; }
+
+.preview-toggle { color: #7e8d8e; font-size: 10px; padding: 4px 7px; border-radius: 5px; margin-right: 9px; }
+.preview-toggle:hover, .preview-toggle.active { background: #e8efec; color: var(--accent-dark); }
+.markdown-preview { display: none; height: 100%; overflow: auto; padding: 21px 20px 14px 0; color: #3c474d; font-family: Georgia, serif; font-size: 17px; line-height: 1.62; }
+.markdown-preview.visible { display: block; }
+.editor-wrap.previewing textarea { display: none; }
+.editor-wrap.previewing .markdown-preview { display: block; }
+.editor-wrap.previewing .editor-fade { display: none; }
+.markdown-preview h1, .markdown-preview h2, .markdown-preview h3 { margin: 0 0 12px; color: #273038; line-height: 1.2; }
+.markdown-preview h1 { font-size: 25px; }.markdown-preview h2 { font-size: 20px; }
+.markdown-preview p { margin: 0 0 15px; }.markdown-preview ul { margin: 0 0 15px; padding-left: 24px; }
+.markdown-preview blockquote { border-left: 2px solid var(--accent); margin: 0 0 15px; padding-left: 14px; color: #657274; }
+.markdown-preview code { background: #edf1f0; border-radius: 4px; padding: 2px 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8em; }
+.markdown-preview pre { background: #edf1f0; border-radius: 7px; padding: 12px 14px; overflow: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.5; }
+body.dark-mode .preview-toggle:hover, body.dark-mode .preview-toggle.active { background: #2b4038; }
+body.dark-mode .markdown-preview { color: #c8d2d1; }.dark-mode .markdown-preview h1, .dark-mode .markdown-preview h2, .dark-mode .markdown-preview h3 { color: #e5eceb; }
+body.dark-mode .markdown-preview blockquote { color: #a9b9b6; } body.dark-mode .markdown-preview code, body.dark-mode .markdown-preview pre { background: #293337; }

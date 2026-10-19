@@ -18,6 +18,8 @@ const els = {
   saveState: document.querySelector('#saveState'), saveWrap: document.querySelector('.save-state'),
   edited: document.querySelector('#editedLabel'), pin: document.querySelector('#pinButton'), toast: document.querySelector('#toast')
 };
+const preview = document.querySelector('#markdownPreview');
+const editorWrap = document.querySelector('.editor-wrap');
 
 function loadState() {
   try {
@@ -58,11 +60,22 @@ function renderEditor() {
   els.pin.textContent = note.pinned ? '★' : '☆';
   els.pin.setAttribute('aria-label', note.pinned ? 'Unpin note' : 'Pin note');
   updateCounts();
+  if (editorWrap.classList.contains('previewing')) renderPreview();
 }
 function selectNote(id) { if (!state.notes.some(n => n.id === id)) return; flushSave(); state.activeId = id; persist(); renderList(); renderEditor(); els.content.focus(); }
 function countWords(text) { return (text.trim().match(/\S+/g) || []).length; }
 function updateCounts() { els.words.textContent = `${countWords(els.content.value)} words`; }
 function escapeHtml(value) { return value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char])); }
+function renderPreview() {
+  let html = escapeHtml(els.content.value);
+  html = html.replace(/^### (.*)$/gm, '<h3>$1</h3>').replace(/^## (.*)$/gm, '<h2>$1</h2>').replace(/^# (.*)$/gm, '<h1>$1</h1>');
+  html = html.replace(/^```(?:\w+)?\n([\s\S]*?)```/gm, '<pre>$1</pre>').replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>');
+  html = html.replace(/^- \[ \] (.*)$/gm, '<p>☐ $1</p>').replace(/^- \[x\] (.*)$/gim, '<p>☑ $1</p>');
+  html = html.replace(/^- (.*)$/gm, '<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g, block => `<ul>${block}</ul>`);
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/_(.*?)_/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.split(/\n{2,}/).map(block => /^<(h|ul|pre|blockquote)/.test(block.trim()) ? block : `<p>${block.replace(/\n/g, '<br>')}</p>`).join('');
+  preview.innerHTML = html;
+}
 function markDirty() {
   els.saveWrap.classList.add('saving'); els.saveState.textContent = 'Saving…';
   clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 550);
@@ -106,12 +119,18 @@ document.querySelector('#pinButton').addEventListener('click', () => { const not
 document.querySelector('#themeToggle').addEventListener('click', () => { const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark'; applyTheme(nextTheme); showToast(`${nextTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`); });
 document.querySelector('#moreButton').addEventListener('click', deleteNote);
 document.querySelector('#revealButton').addEventListener('click', () => showToast('Notes are stored in your local Field Notes folder'));
+document.querySelector('#exportButton').addEventListener('click', () => {
+  flushSave(); const note = activeNote(); const blob = new Blob([note.content], { type: 'text/markdown;charset=utf-8' });
+  const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${(note.title || 'untitled-note').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'untitled-note'}.md`; link.click(); URL.revokeObjectURL(link.href); showToast('Markdown file exported');
+});
+document.querySelector('#previewToggle').addEventListener('click', event => { const showing = editorWrap.classList.toggle('previewing'); event.currentTarget.classList.toggle('active', showing); event.currentTarget.textContent = showing ? 'Edit' : 'Preview'; if (showing) renderPreview(); });
 document.querySelector('#titleEdit').addEventListener('click', () => { els.title.focus(); els.title.select(); });
 els.title.addEventListener('input', markDirty); els.content.addEventListener('input', () => { markDirty(); updateCounts(); });
 document.querySelectorAll('[data-format]').forEach(button => button.addEventListener('click', () => insertFormat(button.dataset.format)));
 document.addEventListener('keydown', event => {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'n') { event.preventDefault(); createNote(); }
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'f') { event.preventDefault(); els.search.focus(); }
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') { event.preventDefault(); flushSave(); showToast('Saved locally'); }
   if (event.key === 'Escape' && document.activeElement === els.search) { els.search.value = ''; renderList(); els.content.focus(); }
 });
 window.addEventListener('beforeunload', flushSave);

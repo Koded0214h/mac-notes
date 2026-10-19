@@ -53,6 +53,7 @@
             <div class="sidebar-footer">
               <div class="local-status"><span class="status-dot"></span><span>Stored on this Mac</span></div>
               <button class="footer-action" id="revealButton"><span>⌂</span> Open notes folder</button>
+              <button class="footer-action" id="exportButton"><span>↓</span> Export current note</button>
               <div class="shortcut-hint"><span>⌘ ⇧ Space</span><span>Open Field Notes</span></div>
             </div>
           </aside>
@@ -82,11 +83,13 @@
               <button data-format="code" title="Code">&lt;/&gt;</button>
               <button data-format="quote" title="Quote">“</button>
               <span class="format-spacer"></span>
+              <button class="preview-toggle" id="previewToggle" title="Preview rendered Markdown">Preview</button>
               <span class="markdown-label">MARKDOWN</span>
             </div>
 
             <div class="editor-wrap">
               <textarea id="noteContent" spellcheck="true" aria-label="Note content"></textarea>
+              <article class="markdown-preview" id="markdownPreview" aria-label="Rendered note preview"></article>
               <div class="editor-fade"></div>
             </div>
 
