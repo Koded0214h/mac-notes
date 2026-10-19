@@ -129,6 +129,16 @@ document.querySelector('#exportButton').addEventListener('click', () => {
   flushSave(); const note = activeNote(); const blob = new Blob([note.content], { type: 'text/markdown;charset=utf-8' });
   const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${(note.title || 'untitled-note').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'untitled-note'}.md`; link.click(); URL.revokeObjectURL(link.href); showToast('Markdown file exported');
 });
+document.querySelector('#importButton').addEventListener('click', () => document.querySelector('#importInput').click());
+document.querySelector('#importInput').addEventListener('change', async event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const content = await file.text();
+  const title = file.name.replace(/\.(markdown|md)$/i, '').replace(/[-_]+/g, ' ').trim() || 'Imported note';
+  const note = { id: `note-${Date.now()}`, title, content, pinned: false, updatedAt: Date.now() };
+  state.notes.push(note); state.activeId = note.id; persist(); renderList(); renderEditor(); showToast('Markdown note imported');
+  event.target.value = '';
+});
 document.querySelector('#previewToggle').addEventListener('click', event => { const showing = editorWrap.classList.toggle('previewing'); event.currentTarget.classList.toggle('active', showing); event.currentTarget.textContent = showing ? 'Edit' : 'Preview'; if (showing) renderPreview(); });
 document.querySelector('#titleEdit').addEventListener('click', () => { els.title.focus(); els.title.select(); });
 els.title.addEventListener('input', markDirty); els.content.addEventListener('input', () => { markDirty(); updateCounts(); });

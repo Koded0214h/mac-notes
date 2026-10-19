@@ -15,6 +15,7 @@ Open `index.html` directly in a browser. The prototype has no build step and sto
 - Keyboard shortcuts: `⌘N` for a note and `⌘F` for search.
 - `⌘S` saves immediately, `⌘↑` and `⌘↓` move through notes.
 - Preview rendered Markdown and export the current note as a `.md` file.
+- Import existing `.md` or `.markdown` files into the notebook.
 - Responsive layout for smaller windows and light/dark-friendly system surfaces.
 
 The next native implementation step would be to move the note model and autosave coordinator into Swift/AppKit while preserving this interaction model.
