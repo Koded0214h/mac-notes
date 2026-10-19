@@ -19,3 +19,7 @@ Open `index.html` directly in a browser. The prototype has no build step and sto
 - Responsive layout for smaller windows and light/dark-friendly system surfaces.
 
 The next native implementation step would be to move the note model and autosave coordinator into Swift/AppKit while preserving this interaction model.
+
+## Native macOS slice
+
+`Native/` contains the AppKit menu bar shell and SwiftUI popover implementation for macOS 13+. Open `Native/Package.swift` in Xcode and run the `FieldNotes` executable. The native slice writes UTF-8 Markdown files to `~/Library/Application Support/Field Notes/Notes/` and keeps metadata separate.
