@@ -23,3 +23,5 @@ The browser prototype remains useful for fast interaction testing; the native im
 ## Native macOS slice
 
 `Native/` contains the AppKit menu bar shell and SwiftUI popover implementation for macOS 13+. Open `Native/Package.swift` in Xcode and run the `FieldNotes` executable. The native slice writes UTF-8 Markdown files to `~/Library/Application Support/Field Notes/Notes/` and keeps metadata separate.
+
+If you do not have Xcode, run `cd Native && ./build-app.sh --open`. The script uses the Swift toolchain and command line frameworks already included with macOS developer tools, builds the app bundle, signs it locally, and opens it in the menu bar.

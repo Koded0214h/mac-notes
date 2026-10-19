@@ -63,7 +63,7 @@ final class NoteStore: ObservableObject {
         saveState = "Saving…"; saveTask?.cancel()
         saveTask = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(500)); guard !Task.isCancelled else { return }
-            await self?.writeFiles()
+            self?.writeFiles()
         }
     }
 
