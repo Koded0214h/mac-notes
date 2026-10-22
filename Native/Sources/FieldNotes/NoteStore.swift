@@ -2,6 +2,14 @@ import Foundation
 
 @MainActor
 final class NoteStore: ObservableObject {
+    private struct NoteMetadata: Codable {
+        let id: UUID
+        var title: String
+        var createdAt: Date
+        var updatedAt: Date
+        var pinned: Bool
+    }
+
     @Published private(set) var notes: [Note] = []
     @Published var activeID: UUID?
     @Published private(set) var saveState = "Saved locally"
@@ -24,7 +32,7 @@ final class NoteStore: ObservableObject {
 
     func updateActive(title: String? = nil, content: String? = nil) {
         guard let activeID, let index = notes.firstIndex(where: { $0.id == activeID }) else { return }
-        if let title { notes[index].title = title.isEmpty ? "Untitled note" : title }
+        if let title { notes[index].title = title }
         if let content { notes[index].content = content }
         notes[index].updatedAt = .now
         scheduleSave()
@@ -49,10 +57,20 @@ final class NoteStore: ObservableObject {
         do {
             try fileManager.createDirectory(at: notesURL, withIntermediateDirectories: true)
             let files = try fileManager.contentsOfDirectory(at: notesURL, includingPropertiesForKeys: nil).filter { $0.pathExtension == "md" }
+            let metadata = (try? Data(contentsOf: metadataURL)).flatMap { try? JSONDecoder().decode([NoteMetadata].self, from: $0) } ?? []
+            let metadataByID = Dictionary(uniqueKeysWithValues: metadata.map { ($0.id, $0) })
             notes = try files.compactMap { url in
                 guard let id = UUID(uuidString: url.deletingPathExtension().lastPathComponent) else { return nil }
                 let content = try String(contentsOf: url, encoding: .utf8)
-                return Note(id: id, title: titleFrom(content, fallback: url.deletingPathExtension().lastPathComponent), content: content, updatedAt: fileManager.modificationDate(for: url) ?? .now)
+                let saved = metadataByID[id]
+                return Note(
+                    id: id,
+                    title: saved?.title ?? titleFrom(content, fallback: "Untitled note"),
+                    content: content,
+                    createdAt: saved?.createdAt ?? fileManager.modificationDate(for: url) ?? .now,
+                    updatedAt: max(saved?.updatedAt ?? .distantPast, fileManager.modificationDate(for: url) ?? .distantPast),
+                    pinned: saved?.pinned ?? false
+                )
             }
             if notes.isEmpty { notes = [Note(title: "The shape of a good day", content: "A good day has room around the edges.\n\nIt starts slowly, with a small useful thing.")]; writeFiles() }
             activeID = notes.first?.id
@@ -75,7 +93,7 @@ final class NoteStore: ObservableObject {
             let existing = try fileManager.contentsOfDirectory(at: notesURL, includingPropertiesForKeys: nil).filter { $0.pathExtension == "md" }
             for file in existing where UUID(uuidString: file.deletingPathExtension().lastPathComponent).map({ !current.contains($0) }) == true { try fileManager.removeItem(at: file) }
             for note in notes { let url = notesURL.appendingPathComponent("\(note.id.uuidString).md"); try note.content.write(to: url, atomically: true, encoding: .utf8) }
-            let metadata = try JSONEncoder().encode(notes.map { ["id": $0.id.uuidString, "title": $0.title, "pinned": String($0.pinned)] })
+            let metadata = try JSONEncoder().encode(notes.map { NoteMetadata(id: $0.id, title: $0.title, createdAt: $0.createdAt, updatedAt: $0.updatedAt, pinned: $0.pinned) })
             try metadata.write(to: metadataURL, options: .atomic); saveState = "Saved locally"
         } catch { saveState = "Could not save" }
     }
