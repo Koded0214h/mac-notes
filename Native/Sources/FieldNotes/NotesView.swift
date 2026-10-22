@@ -8,6 +8,7 @@ struct NotesView: View {
     @State private var query = ""
     @State private var preview = false
     @State private var showPreferences = false
+    @State private var insertTaskToken = 0
     @FocusState private var titleFocused: Bool
 
     @AppStorage("fieldNotes.appearance") private var appearance = AppearanceMode.system.rawValue
@@ -85,6 +86,10 @@ struct NotesView: View {
                 Label(store.saveState, systemImage: store.saveState == "Saved locally" ? "checkmark.circle.fill" : "circle.dotted")
                     .font(.caption2).foregroundStyle(.secondary)
                 Spacer()
+                Button { insertTaskToken += 1 } label: { Image(systemName: "checklist") }
+                    .buttonStyle(.plain)
+                    .help("Toggle checklist (⌘⇧L)")
+                    .disabled(preview || store.activeNote == nil)
                 Button(preview ? "Edit" : "Preview") { preview.toggle() }.buttonStyle(.plain).font(.caption)
                 Button { if let note = store.activeNote { store.togglePin(note) } } label: {
                     Image(systemName: store.activeNote?.pinned == true ? "pin.fill" : "pin")
@@ -114,7 +119,8 @@ struct NotesView: View {
                         text: Binding(get: { store.activeNote?.content ?? note.content }, set: { store.updateActive(content: $0) }),
                         documentID: note.id,
                         font: editorTypeface.font(size: fontSize),
-                        lineSpacing: lineSpacing
+                        lineSpacing: lineSpacing,
+                        insertTaskToken: insertTaskToken
                     )
                 }
 

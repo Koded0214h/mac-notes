@@ -75,6 +75,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
         editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
         editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+
+        let formatItem = NSMenuItem()
+        mainMenu.addItem(formatItem)
+        let formatMenu = NSMenu(title: "Format")
+        formatItem.submenu = formatMenu
+        let checklist = formatMenu.addItem(withTitle: "Toggle Checklist", action: #selector(ChecklistTextView.toggleChecklist(_:)), keyEquivalent: "l")
+        checklist.keyEquivalentModifierMask = [.command, .shift]
         NSApp.mainMenu = mainMenu
     }
 }
