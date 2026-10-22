@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover = NSPopover()
         popover.contentViewController = hosting
         popover.contentSize = NSSize(width: 760, height: 590)
-        popover.behavior = .applicationDefined
+        popover.behavior = .transient
         popover.animates = true
         shortcutManager.start { [weak self] in self?.togglePopover(nil) }
         DispatchQueue.main.async { [weak self] in self?.showPopover() }
@@ -37,12 +37,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func showPopover(relativeTo button: NSStatusBarButton? = nil) {
         guard let button = button ?? statusItem.button else { return }
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-        if let window = popover.contentViewController?.view.window {
-            window.hidesOnDeactivate = false
-            window.level = .floating
-            window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-            window.makeKey()
-        }
+        popover.contentViewController?.view.window?.makeKey()
     }
 
     private func hidePopover() {
